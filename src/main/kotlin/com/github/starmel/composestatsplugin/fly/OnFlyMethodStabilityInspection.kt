@@ -112,16 +112,27 @@ fun KotlinType.getInstabilityCause(composeFunctionModule: Module): String? {
             return ComposeStatsBundle.message("cause.is.interface", shortName.toString())
         }
 
-        memberScope.getContributedDescriptors().filterIsInstance<PropertyDescriptorImpl>()
+        memberScope.getContributedDescriptors()
             .forEach { descriptor ->
+                if (descriptor is PropertyDescriptorImpl) {
                     if (descriptor.isVar) {
-                        return ComposeStatsBundle.message("cause.contains.mutable.property", shortName.toString(), descriptor.name)
+                        return ComposeStatsBundle.message(
+                            "cause.contains.mutable.property",
+                            shortName.toString(),
+                            descriptor.name
+                        )
                     } else {
                         val propKtClass = descriptor.type
 
                         val instabilityCause = propKtClass.getInstabilityCause(composeFunctionModule)
                         if (instabilityCause != null) {
-                            return ComposeStatsBundle.message("cause.contains.unstable.property", shortName.toString(), descriptor.name, instabilityCause)
+                            return ComposeStatsBundle.message(
+                                "cause.contains.unstable.property",
+                                shortName.toString(),
+                                descriptor.name,
+                                instabilityCause
+                            )
+                        }
                     }
                 }
             }
